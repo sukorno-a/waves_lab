@@ -11,4 +11,4 @@ The following libraries are required for the script to function,
 all of which are included in the conda environment:\
 numpy\
 matplotlib\
-seaborn\
+seaborn
