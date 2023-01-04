@@ -1,3 +1,5 @@
+"""Script to plot the Fourier series of a square wave using input parameters period, amplitude and number of terms"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sn
