@@ -4,6 +4,8 @@ Repository for my second year "Waves" lab cycle. Included files:
 
 - waves_lab_script.pdf
 -> document provided which details our experiment, split into three tasks
+
+__Task 1:__
 - fourier.py
 -> a very basic script containing a function to calculate N terms of a Fourier series for a square wave and plot them. Task 1.2 in the lab script specifies a square wave with period τ = 240 and amplitude T(t) 0 to 100. The fourier series for this was solved analytically then transcribed into python.
 - task_1.3_semicircle_low.txt and task_1.3_semicircle_high.txt
