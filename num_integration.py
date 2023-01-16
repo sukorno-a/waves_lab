@@ -27,6 +27,8 @@ def rect(x, y):
     plt.subplot()
     plt.plot(x, y, ms=1)
     plt.scatter(x, y, linewidths=0.1)
+    plt.xlabel("x")
+    plt.ylabel("y")
 
     for i in range(len(x) - 1):
         mean_height = (y[i] + y[i + 1]) / 2
