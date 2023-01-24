@@ -141,7 +141,9 @@ data = ["1min_a", "1min_b", "2min_a", "2min_b", "4min_a", "4min_b", "6min", "8mi
 # task 2.5
 data = ["1min_a", "2min_a", "4min_a", "6min", "8min", "16min"]
 list_of_diffusivity = []
+list_of_diffusivity_std = []
 periods = []
+expected = []
 for i in data:
     if i[1].isdigit():
         period = int(i[0:2]) * 60
@@ -150,8 +152,15 @@ for i in data:
     periods.append(period / 60)
     dataset = thermal("PART2_Thermal_Waves/data_sets/thermal_" + i + ".txt")
     print(f"Thermal diffusivity approximation for period {period}s: {dataset.diffusivity_approx(period)}")
-    list_of_diffusivity.append(dataset.diffusivity_approx(period))
+    list_of_diffusivity.append(dataset.diffusivity_approx(period).n)
+    list_of_diffusivity_std.append(dataset.diffusivity_approx(period).s)
+    expected.append(0.124)
 
-plt.plot(periods, list_of_diffusivity.nominal_value)
+
+plt.plot(periods, list_of_diffusivity, label="D/period")
+plt.plot(periods, expected, label="Expected D")
+plt.xlabel("Period/minutes")
+plt.ylabel("Thermal diffusivity/mms^-1")
+plt.legend()
 plt.show()
 
