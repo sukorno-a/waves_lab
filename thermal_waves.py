@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import fourier as f
+import num_integration as numint
 import seaborn as sns
 import math as math
 import uncertainties
@@ -157,10 +158,43 @@ for i in data:
     expected.append(0.124)
 
 
-plt.plot(periods, list_of_diffusivity, label="D/period")
-plt.plot(periods, expected, label="Expected D")
-plt.xlabel("Period/minutes")
-plt.ylabel("Thermal diffusivity/mms^-1")
-plt.legend()
-plt.show()
+# plt.plot(periods, list_of_diffusivity, label="D/period")
+# plt.plot(periods, expected, label="Expected D")
+# plt.xlabel("Period/minutes")
+# plt.ylabel("Thermal diffusivity/mms^-1")
+# plt.legend()
+# plt.show()
 
+# task 2.6 - numerical integration to find Fourier series of 4-min dataset
+
+def fourier_coefficients(x_array, y_array, period, n = 3):
+    function = y_array
+    a_n = []
+    b_n = []
+    for num in range(1, n + 1):
+        a_n_integrand = []
+        b_n_integrand = []
+        for i in range(len(x_array)):
+            cos_term = function[i] * np.cos((2 * np.pi * x_array[i] * num) / (period))
+            a_n_integrand.append(cos_term)
+            sin_term = function[i] * np.sin((2 * np.pi * x_array[i] * num) / (period))
+            b_n_integrand.append(sin_term)
+        a_n.append(numint.rect(x_array, a_n_integrand) * (2 / period))
+        b_n.append(numint.rect(x_array, b_n_integrand) * (2 / period))
+    return a_n, b_n
+
+def amplitude_phase(a_n, b_n):
+    amplitudes = []
+    phase_lags = []
+    for i in range(len(a_n)):
+        amplitudes.append( ( (a_n[i] ** 2) + (b_n[i] ** 2) ) ** 0.5)
+        phase_lags.append(-1 * np.arctan(a_n[i] / b_n[i]))
+    return amplitudes, phase_lags
+
+x_4min_a, y_4min_a = np.loadtxt("PART2_Thermal_Waves/data_sets/thermal_4min_a.txt", unpack=True, skiprows=3)
+x_4min_a = x_4min_a / 10
+an, bn = fourier_coefficients(x_4min_a, y_4min_a, 240)
+print(f"The an coefficients are {an} and the bn coefficiets are {bn}")
+
+amplitudes, phase_lags = amplitude_phase(an, bn)
+print(f"The amplitudes are {amplitudes} and the phase lags are {phase_lags}")
