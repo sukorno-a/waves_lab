@@ -124,6 +124,48 @@ class thermal:
         diffusivity = (omega * (delta_r**2)) / (2 * ((log(t_factor, math.e))**2))
         return diffusivity
 
+    # task 2.6a - numerical integration to find Fourier series of 4-min dataset
+
+    def fourier_coefficients(self, period, n = 3):
+        function = self.y
+        x_array = self.x
+        a_n = []
+        b_n = []
+        for num in range(1, n + 1):
+            a_n_integrand = []
+            b_n_integrand = []
+            for i in range(len(x_array)):
+                cos_term = function[i] * np.cos((2 * np.pi * x_array[i] * num) / (period))
+                a_n_integrand.append(cos_term)
+                sin_term = function[i] * np.sin((2 * np.pi * x_array[i] * num) / (period))
+                b_n_integrand.append(sin_term)
+            a_n.append(numint.rect(x_array, a_n_integrand) * (2 / period))
+            b_n.append(numint.rect(x_array, b_n_integrand) * (2 / period))
+        return a_n, b_n
+
+    def amplitude_phase(a_n, b_n):
+        amplitudes = []
+        phase_lags = []
+        for i in range(len(a_n)):
+            amplitudes.append( ( (a_n[i] ** 2) + (b_n[i] ** 2) ) ** 0.5)
+            phase_lags.append(-1 * np.arctan2(b_n[i], a_n[i]))
+        return amplitudes, phase_lags
+
+    # task 2.6b - use the amplitude-phase form per harmonic to find values of thermal diffusivity
+
+    def d_transmission(amplitude, period, n):
+        w_n = (2 * np.pi * n) / period
+        transmission_factor = amplitude / 100
+        delta_r = ufloat(7.75, 0.06)
+        diffusivity = (w_n * (delta_r**2)) / (2 * ((log(transmission_factor, math.e))**2))
+        return diffusivity
+
+    def d_phase(phase, period, n):
+        w_n = (2 * np.pi * n) / period
+        delta_r = ufloat(7.75, 0.06)
+        diffusivity = (w_n * (delta_r**2)) / (2 * (phase**2))
+        return diffusivity
+
 # task 2.4
 data = ["1min_a", "1min_b", "2min_a", "2min_b", "4min_a", "4min_b", "6min", "8min", "16min"]
 # for i in data:
@@ -165,34 +207,12 @@ for i in data:
 # plt.legend()
 # plt.show()
 
-# task 2.6a - numerical integration to find Fourier series of 4-min dataset
 
-def fourier_coefficients(x_array, y_array, period, n = 3):
-    function = y_array
-    a_n = []
-    b_n = []
-    for num in range(1, n + 1):
-        a_n_integrand = []
-        b_n_integrand = []
-        for i in range(len(x_array)):
-            cos_term = function[i] * np.cos((2 * np.pi * x_array[i] * num) / (period))
-            a_n_integrand.append(cos_term)
-            sin_term = function[i] * np.sin((2 * np.pi * x_array[i] * num) / (period))
-            b_n_integrand.append(sin_term)
-        a_n.append(numint.rect(x_array, a_n_integrand) * (2 / period))
-        b_n.append(numint.rect(x_array, b_n_integrand) * (2 / period))
-    return a_n, b_n
 
-def amplitude_phase(a_n, b_n):
-    amplitudes = []
-    phase_lags = []
-    for i in range(len(a_n)):
-        amplitudes.append( ( (a_n[i] ** 2) + (b_n[i] ** 2) ) ** 0.5)
-        # phase_lags.append(-1 * np.arctan(a_n[i] / b_n[i]))
-        phase_lags.append(-1 * np.arctan2(b_n[i], a_n[i]))
-    return amplitudes, phase_lags
+# task 2.6a
 
-# test using a perfect sin wave with amplitude 50 to check Fourier coefficients are correct
+# test using a perfect sin wave with amplitude 50 to check Fourier coefficients are correct:
+
 # test_x = np.linspace(0, 2 * np.pi, 1000)
 # test_y = []
 # for i in test_x:
@@ -203,28 +223,22 @@ def amplitude_phase(a_n, b_n):
 # amplitudes, phase_lags = amplitude_phase(test_an, test_bn)
 # print(f"The amplitudes are {amplitudes} and the phase lags are {phase_lags}")
 
-x_4min_a, y_4min_a = np.loadtxt("PART2_Thermal_Waves/data_sets/thermal_4min_a.txt", unpack=True, skiprows=3)
-x_4min_a = x_4min_a / 10
-an, bn = fourier_coefficients(x_4min_a, y_4min_a, 240)
-print(f"The an coefficients are {an} and the bn coefficiets are {bn}")
-amplitudes, phase_lags = amplitude_phase(an, bn)
-print(f"The amplitudes are {amplitudes} and the phase lags are {phase_lags}")
+# now apply this to our 4-min dataset:
 
-# task 2.6b - use the amplitude-phase form per harmonic to find values of thermal diffusivity
+# x_4min_a, y_4min_a = np.loadtxt("PART2_Thermal_Waves/data_sets/thermal_4min_a.txt", unpack=True, skiprows=3)
+# x_4min_a = x_4min_a / 10
+# an, bn = fourier_coefficients(x_4min_a, y_4min_a, 240)
+# print(f"The an coefficients are {an} and the bn coefficiets are {bn}")
+# amplitudes, phase_lags = amplitude_phase(an, bn)
+# print(f"The amplitudes are {amplitudes} and the phase lags are {phase_lags}")
 
-def d_transmission(amplitude, period, n):
-    w_n = (2 * np.pi * n) / period
-    transmission_factor = amplitude / 100
-    delta_r = ufloat(7.75, 0.06)
-    diffusivity = (w_n * (delta_r**2)) / (2 * ((log(transmission_factor, math.e))**2))
-    return diffusivity
+# task 2.6b
 
-def d_phase(phase, period, n):
-    w_n = (2 * np.pi * n) / period
-    delta_r = ufloat(7.75, 0.06)
-    diffusivity = (w_n * (delta_r**2)) / (2 * (phase**2))
-    return diffusivity
+# for i in range(len(amplitudes)):
+#     print(f"The thermal diffusivity for n = {i + 1} using transmission factor: {d_transmission(amplitudes[i], 240, i + 1)}")
+#     print(f"The thermal diffusivity for n = {i + 1} using phase lag: {d_phase(phase_lags[i], 240, i + 1)}")
 
-for i in range(len(amplitudes)):
-    print(f"The thermal diffusivity for n = {i + 1} using transmission factor: {d_transmission(amplitudes[i], 240, i + 1)}")
-    print(f"The thermal diffusivity for n = {i + 1} using phase lag: {d_phase(phase_lags[i], 240, i + 1)}")
+# task 2.7a - find Dtf and Dpl for each of the three harmonics for each dataset
+
+
+amplitudes, phases = thermal.amplitude_phase(thermal.fourier_coefficients())
