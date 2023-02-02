@@ -24,19 +24,19 @@ def rect(x, y):
     width = x_range / (len(x) - 1)
     area = 0
 
-    plt.subplot()
-    plt.plot(x, y, ms=0.1)
+    # plt.subplot()
+    # plt.plot(x, y, ms=0.1)
     # plt.scatter(x, y, linewidths=0.1)
-    plt.xlabel("x")
-    plt.ylabel("y")
+    # plt.xlabel("x")
+    # plt.ylabel("y")
 
     for i in range(len(x) - 1):
         mean_height = (y[i] + y[i + 1]) / 2
         rect_area = mean_height * width
         area += rect_area
-        plt.bar(x[i], mean_height, width=width, align="edge", color = "lightblue", edgecolor = "slategray")
+        # plt.bar(x[i], mean_height, width=width, align="edge", color = "lightblue", edgecolor = "slategray")
 
-    plt.show()
+    # plt.show()
 
     return area
 

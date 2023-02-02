@@ -143,7 +143,7 @@ class thermal:
             b_n.append(numint.rect(x_array, b_n_integrand) * (2 / period))
         return a_n, b_n
 
-    def amplitude_phase(a_n, b_n):
+    def amplitude_phase(self, a_n, b_n):
         amplitudes = []
         phase_lags = []
         for i in range(len(a_n)):
@@ -153,14 +153,14 @@ class thermal:
 
     # task 2.6b - use the amplitude-phase form per harmonic to find values of thermal diffusivity
 
-    def d_transmission(amplitude, period, n):
+    def d_transmission(self, amplitude, period, n):
         w_n = (2 * np.pi * n) / period
         transmission_factor = amplitude / 100
         delta_r = ufloat(7.75, 0.06)
         diffusivity = (w_n * (delta_r**2)) / (2 * ((log(transmission_factor, math.e))**2))
         return diffusivity
 
-    def d_phase(phase, period, n):
+    def d_phase(self, phase, period, n):
         w_n = (2 * np.pi * n) / period
         delta_r = ufloat(7.75, 0.06)
         diffusivity = (w_n * (delta_r**2)) / (2 * (phase**2))
@@ -240,5 +240,53 @@ for i in data:
 
 # task 2.7a - find Dtf and Dpl for each of the three harmonics for each dataset
 
+data = ["1min_a", "2min_a", "4min_a", "6min", "8min", "16min"]
+periods = []
 
-amplitudes, phases = thermal.amplitude_phase(thermal.fourier_coefficients())
+for i in data:
+    if i[1].isdigit():
+        period = int(i[0:2]) * 60
+    else:
+        period = int(i[0]) * 60
+    periods.append(period / 60)
+    
+    # initialise instance of class object
+    dataset = thermal("PART2_Thermal_Waves/data_sets/thermal_" + i + ".txt")
+
+    # plot the original dataset
+    plt.figure()
+    dataset.plot()
+
+    # find amplitude-phase form of each harmonic
+    amplitudes, phase_lags = dataset.amplitude_phase(*dataset.fourier_coefficients(period))
+
+    # assign dtf and dpl arrays with their errors
+    list_of_dtf = []
+    list_of_dtf_std = []
+    list_of_dpl = []
+    list_of_dpl_std = []
+    print(f"Period: {period}")
+
+    # for each harmonic, give the Dtf and Dpl
+    for i in range(len(amplitudes)):
+        d_tf = dataset.d_transmission(amplitudes[i], period, i + 1)
+        d_pl = dataset.d_phase(phase_lags[i], period, i + 1)
+        print(f"D_tf for n = {i + 1}: {d_tf}")
+        print(f"D_pl n = {i + 1}: {d_pl}")
+
+        list_of_dtf.append(d_tf.n)
+        print(d_tf.n)
+        list_of_dtf_std.append(d_tf.s)
+        list_of_dpl.append(d_pl.n)
+        list_of_dtf_std.append(d_pl.s)
+    print(len(periods), len(list_of_dtf))
+    plt.figure()
+    plt.plot(periods, list_of_dtf)
+    plt.errorbar(period, list_of_dtf, yerr=list_of_dtf_std)
+    plt.show()
+
+    plt.figure()
+    plt.plot(periods, list_of_dpl)
+    plt.errorbar(period, list_of_dpl, yerr=list_of_dpl_std)
+    plt.show()
+
