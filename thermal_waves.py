@@ -5,6 +5,7 @@ import num_integration as numint
 import seaborn as sns
 import math as math
 import uncertainties
+import re
 from uncertainties import ufloat
 from uncertainties.umath import * 
 
@@ -105,6 +106,10 @@ class thermal:
         """
         global fundamental 
         fundamental = f.fourier_square(self.x, 1, period, amplitude)
+        global square_harmonic_2
+        square_harmonic_2 = f.fourier_square(self.x, 3, period, amplitude)
+        global square_harmonic_3
+        square_harmonic_3 = f.fourier_square(self.x, 5, period, amplitude)
         plt.plot(self.x, fundamental, label="Fundamental")
 
     def plot(self):
@@ -188,10 +193,8 @@ list_of_diffusivity_std = []
 periods = []
 expected = []
 for i in data:
-    if i[1].isdigit():
-        period = int(i[0:2]) * 60
-    else:
-        period = int(i[0]) * 60
+    m = re.match(r"\d+", i)
+    period = int(m[0]) * 60
     periods.append(period / 60)
     dataset = thermal("PART2_Thermal_Waves/data_sets/thermal_" + i + ".txt")
     print(f"Thermal diffusivity approximation for period {period}s: {dataset.diffusivity_approx(period)}")
@@ -242,20 +245,30 @@ for i in data:
 
 data = ["1min_a", "2min_a", "4min_a", "6min", "8min", "16min"]
 periods = []
+dtf_n_1 = []
+dtf_n_2 = []
+dtf_n_3 = []
+dpl_n_1 = []
+dpl_n_2 = []
+dpl_n_3 = []
+dtf_n_1_std = []
+dtf_n_2_std = []
+dtf_n_3_std = []
+dpl_n_1_std = []
+dpl_n_2_std = []
+dpl_n_3_std = []
 
 for i in data:
-    if i[1].isdigit():
-        period = int(i[0:2]) * 60
-    else:
-        period = int(i[0]) * 60
+    m = re.match(r"\d+", i)
+    period = int(m[0]) * 60
     periods.append(period / 60)
     
     # initialise instance of class object
     dataset = thermal("PART2_Thermal_Waves/data_sets/thermal_" + i + ".txt")
 
     # plot the original dataset
-    plt.figure()
-    dataset.plot()
+    # plt.figure()
+    # dataset.plot()
 
     # find amplitude-phase form of each harmonic
     amplitudes, phase_lags = dataset.amplitude_phase(*dataset.fourier_coefficients(period))
@@ -275,18 +288,38 @@ for i in data:
         print(f"D_pl n = {i + 1}: {d_pl}")
 
         list_of_dtf.append(d_tf.n)
-        print(d_tf.n)
         list_of_dtf_std.append(d_tf.s)
         list_of_dpl.append(d_pl.n)
-        list_of_dtf_std.append(d_pl.s)
-    print(len(periods), len(list_of_dtf))
-    plt.figure()
-    plt.plot(periods, list_of_dtf)
-    plt.errorbar(period, list_of_dtf, yerr=list_of_dtf_std)
-    plt.show()
+        list_of_dpl_std.append(d_pl.s)
 
-    plt.figure()
-    plt.plot(periods, list_of_dpl)
-    plt.errorbar(period, list_of_dpl, yerr=list_of_dpl_std)
-    plt.show()
+    dtf_n_1.append(list_of_dtf[0])
+    dtf_n_2.append(list_of_dtf[1])
+    dtf_n_3.append(list_of_dtf[2])
+    dpl_n_1.append(list_of_dpl[0])
+    dpl_n_2.append(list_of_dpl[1])
+    dpl_n_3.append(list_of_dpl[2])
+    dtf_n_1_std.append(list_of_dtf_std[0])
+    dtf_n_2_std.append(list_of_dtf_std[1])
+    dtf_n_3_std.append(list_of_dtf_std[2])
+    dpl_n_1_std.append(list_of_dpl_std[0])
+    dpl_n_2_std.append(list_of_dpl_std[1])
+    dpl_n_3_std.append(list_of_dpl_std[2])
+
+    
+plt.figure()
+plt.plot(periods, dtf_n_1, label = "DTF n = 1")
+plt.errorbar(periods, dtf_n_1, yerr = dtf_n_1_std, capsize = 3)
+plt.plot(periods, dtf_n_2, label = "DTF n = 2")
+plt.errorbar(periods, dtf_n_2, yerr = dtf_n_2_std)
+plt.plot(periods, dtf_n_3, label = "DTF n = 3")
+plt.errorbar(periods, dtf_n_3, yerr = dtf_n_3_std)
+# plt.plot(periods, dpl_n_1, label = "DPL n = 1")
+# plt.errorbar(periods, dpl_n_1, yerr = dpl_n_1_std)
+# plt.plot(periods, dpl_n_2, label = "DPL n = 2")
+# plt.errorbar(periods, dpl_n_2, yerr = dpl_n_2_std)
+# plt.plot(periods, dpl_n_3, label = "DPL n = 3")
+# plt.errorbar(periods, dpl_n_3, yerr = dpl_n_3_std)
+plt.legend(loc = "upper right")
+plt.show()
+
 
