@@ -78,6 +78,37 @@ def fourier_square(x, n, period, amp):
         T += term
     return T + a_0
 
+def fourier_square_term(x, n, period, amp):
+    """Function to plot fourier series of a square wave with N terms
+    
+    Parameters
+    ----------
+    x : array
+        For each x, plot its square wave fourier series output
+    n : int
+        Number of term, must be odd (1, 3, 5 etc)
+    period : float
+        Period of time over which the wave oscillates
+    amp : float
+        Amplitude of square wave
+        
+    Returns
+    -------
+    T : float
+        Output of function"""
+
+    L = period / 2
+    a_0 = amp / 2
+
+    b_n = (2 * amp) / (np.pi * n)
+    w_n = (np.pi * n) / L
+    term = b_n * np.sin(w_n * x)
+    T = term
+
+    return T + a_0
+
+
+
 # x = np.linspace(0, 1000, 1000)
 # period = 240
 # amplitude = 100
