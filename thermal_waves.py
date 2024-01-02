@@ -284,6 +284,11 @@ dpl_n_1_std = []
 dpl_n_2_std = []
 dpl_n_3_std = []
 
+from uncertainties import unumpy, ufloat
+import numpy as np
+arr = []
+
+# 3.0+/-1.2
 for i in data:
     m = re.match(r"\d+", i)
     period = int(m[0]) * 60
@@ -312,9 +317,10 @@ for i in data:
     for i in range(len(amplitudes)):
         d_tf = dataset.d_transmission(amplitudes[i], period, i + 1)
         d_pl = dataset.d_phase(phase_lags[i], period, i + 1)
+        arr.append(d_tf)
         print(f"D_tf for n = {i + 1}: {d_tf}")
         print(f"D_pl n = {i + 1}: {d_pl}")
-
+        
         list_of_dtf.append(d_tf.n)
         list_of_dtf_std.append(d_tf.s)
         list_of_dpl.append(d_pl.n)
@@ -335,16 +341,26 @@ for i in data:
 
     
 plt.figure()
-plt.errorbar(periods, dtf_n_1, yerr = dtf_n_1_std, capsize = 3, label = "Dtf, n = 1")
-plt.errorbar(periods, dtf_n_2, yerr = dtf_n_2_std, capsize = 3, label = "Dtf, n = 2")
-plt.errorbar(periods, dtf_n_3, yerr = dtf_n_3_std, capsize = 3, label = "Dtf, n = 3")
-plt.errorbar(periods, dpl_n_1, yerr = dpl_n_1_std, capsize = 3, label = "Dpl, n = 1")
-plt.errorbar(periods, dpl_n_2, yerr = dpl_n_2_std, capsize = 3, label = "Dpl, n = 2")
-plt.errorbar(periods, dpl_n_3, yerr = dpl_n_3_std, capsize = 3, label = "Dpl, n = 3")
-plt.legend(loc = "upper right")
+plt.errorbar(periods, dtf_n_1, yerr = dtf_n_1_std, capsize = 3, label = "Num. Integration",color = "cadetblue")
+plt.errorbar(periods, dtf_n_2, yerr = dtf_n_2_std, capsize = 3,color = "cadetblue")
+plt.errorbar(periods, dtf_n_3, yerr = dtf_n_3_std, capsize = 3,color = "cadetblue")
+plt.errorbar(periods, dpl_n_1, yerr = dpl_n_1_std, capsize = 3,color = "cadetblue")
+plt.errorbar(periods, dpl_n_2, yerr = dpl_n_2_std, capsize = 3,color = "cadetblue")
+plt.errorbar(periods, dpl_n_3, yerr = dpl_n_3_std, capsize = 3,color = "cadetblue")
+plt.plot(periods, [0.124,0.124,0.124,0.124,0.124,0.124], label = "Expected 0.124",linestyle='dashed',color="orange")
+plt.plot([1,2,4,6,8,16],[0.13292848703783777, 0.0704956598377271, 0.07448121366891888, 0.10821944900160108, 0.28231027205849724, 0.06755006339216664],label="BESSEL",linestyle="dashdot",color="red")
+# plt.plot([1,4,6,8], [0.19,0.2,0.3,0.59],label="FFT",linestyle="dotted",color = "purple")
+# plt.plot([1,4,6,8], [0.046,0.04,0.05,0.08],linestyle="dotted",color = "purple")
+# plt.plot([1,4,6,8], [0.062,0.08,0.02,0.03],linestyle="dotted",color = "purple")
+# plt.plot([1,4,6,8], [3.67,0.08,0.04,0.04],linestyle="dotted",color = "purple")
+# plt.plot([1,4,6,8], [2.09,2.09,0.2,0.05],linestyle="dotted",color = "purple")
+# plt.plot([1,4,6,8], [1.29,1.29,2.24,0.18],linestyle="dotted",color = "purple")
 plt.xlabel("Period (min)")
-plt.ylabel("Thermal diffusivity (mm/s)")
+plt.ylabel("Thermal Diffusivity (mm/s)")
+plt.legend(loc="upper right")
 plt.show()
+arr = np.array(arr)
+print("mean:",sum(arr)/len(arr))
 
 y = []
 for i in x_4min_a:
@@ -363,4 +379,3 @@ plt.show()
 #     array.append(50 + (an[0] * np.cos(2 * np.pi * i / 240)) + (bn[0] * np.sin(2 * np.pi * i / 240)))
 # plt.plot(x, array)
 # plt.show()
-

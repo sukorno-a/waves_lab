@@ -28,14 +28,29 @@ To start, just input your data and press run!
 Created on Wed Aug 19 18:46:50 2020
 @author: Carolina_Rossi
 """
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import math as math
+import uncertainties
+import re
+from uncertainties import ufloat
+from uncertainties.umath import * 
+import scipy
+from scipy import integrate
 
+sns.set_style("darkgrid")
 # =============================================================================
 # YOUR DATA:
 # =============================================================================
-trans_data = []#input your transmission data here
-trans_periods = [] #input the corresponding periods here (s)
-phase_data = []#input your phase lag data here
-phase_periods = []#input the corresponding periods here (s)
+# trans_data = [6.210914136705685, 5.942245529206358, 5.801426964680846, 5.845575549237731, 5.893031125112209, 3.2900198251471107]#input your transmission data here
+# trans_periods = [60, 120, 240, 360, 480, 960] #input the corresponding periods here (s)
+# phase_data = []#input your phase lag data here
+# phase_periods = []#input the corresponding periods here (s)
+trans_data = [0.016067842692765198,0.018592824310589035,0.08895745803391647,0.2759124496877202,0.7537737847777987,0.46460756512536]
+trans_periods = [60,120,240,360,480,960]
+phase_data = []
+phase_periods = []
 r_out = 0.01025 #outer radius (m)
 r_in = 0.0025 #inner  radius (m)
 no_terms = 100 #number of terms you want to truncate the J0 Bessel Series to
@@ -229,6 +244,17 @@ for i in range(len(trans_alphas)):
 
 print("\nDIFFUSIVITY - BESSEL ANALYSIS")
 print('\nDiffusivity - Transmission Factors:')
+for i in range(len(D_trans)):
+    D_trans[i] *= 1000000
 print(D_trans)
 print('\nDiffusivity - Phase Lags:')
 print(D_phase)
+
+plt.plot([1,2,4,6,8,16],[0.13292848703783777, 0.0704956598377271, 0.07448121366891888, 0.10821944900160108, 0.28231027205849724, 0.06755006339216664],label="BESSEL")
+plt.plot([1,2,4,6,8,16],[0.124,0.124,0.124,0.124,0.124,0.124],label="Expected 0.124")
+plt.xlabel("Period (min)")
+plt.ylabel("Thermal Diffusivity (mm/s)")
+plt.legend(loc="upper right")
+plt.show()
+values = [0.13292848703783777, 0.0704956598377271, 0.07448121366891888, 0.10821944900160108, 0.28231027205849724, 0.06755006339216664]
+print("mean:",np.mean(values),np.std(values))

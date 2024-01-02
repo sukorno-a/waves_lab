@@ -33,11 +33,11 @@ def rect(x, y):
     for i in range(len(x) - 1):
         mean_height = (y[i] + y[i + 1]) / 2
         rect_area = mean_height * width
-    #     if rect_area < 0:
-    #         area += (-1 * rect_area)
-    #     else:
-    #         area += rect_area
-        area += rect_area
+        if rect_area < 0:
+            area += (-1 * rect_area)
+        else:
+            area += rect_area
+        # area += rect_area
     #     plt.bar(x[i], mean_height, width=width, align="edge", color = "lightblue", edgecolor = "slategray")
 
     # plt.show()

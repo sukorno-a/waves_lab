@@ -41,10 +41,21 @@ def square(x, period, amplitude, offset = 50):
 
     return y
 
-# x = np.linspace(0, 1000, 1000)
-# y = square(x, 240, 100)
-# plt.plot(x, y)
-# plt.show()
+x = np.linspace(0, 960, 960)
+y = square(x, 240, 100)
+plt.plot(x, y)
+plt.xlabel("Time/s")
+plt.ylabel("Temperature/\xb0C")
+plt.show()
+
+x_4min, y_4min = np.loadtxt("PART2_Thermal_Waves/data_sets/thermal_4min_a.txt", unpack=True, skiprows=3)
+x_4min = x_4min / 10
+
+plt.figure()
+plt.plot(x_4min, y_4min)
+plt.xlabel("Time/s")
+plt.ylabel("Temperature/\xb0C")
+plt.show()
 
 def fourier_square(x, n, period, amp):
     """Function to plot fourier series of a square wave with N terms
@@ -140,3 +151,51 @@ def fourier_square_term(x, n, period, amp):
 # plt.xlabel("t")
 # plt.ylabel("T(t)")
 # plt.show()
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# sampling rate
+sr = 2000
+# sampling interval
+ts = 1.0/sr
+t = np.arange(0,1,ts)
+
+freq = 1.
+x = 3*np.sin(2*np.pi*freq*t)
+
+freq = 4
+x += np.sin(2*np.pi*freq*t)
+
+freq = 7   
+x += 0.5* np.sin(2*np.pi*freq*t)
+
+plt.figure(figsize = (8, 6))
+plt.plot(t, x, 'r')
+plt.ylabel('Amplitude')
+
+plt.show()
+
+from numpy.fft import fft, ifft
+
+X = fft(x)
+N = len(X)
+n = np.arange(N)
+T = N/sr
+freq = n/T 
+
+plt.figure()
+plt.plot(t, ifft(X))
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.stem(freq, np.abs(X))
+plt.xlabel('Freq (Hz)')
+plt.ylabel('FFT Amplitude |X(freq)|')
+plt.xlim(0, 10)
+
+plt.show()
